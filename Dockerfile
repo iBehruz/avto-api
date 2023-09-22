@@ -10,20 +10,30 @@ ARG uid=1000
 RUN apt-get update && apt-get install -y \
     git \
     curl \
+    libpq-dev \
+    libzip-dev \
+    postgresql \
     libpng-dev \
     libonig-dev \
     libxml2-dev \
     zip \
     unzip
 
+
+#Install composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
+
+
 # Get latest Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+#COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install PHP extensions
 RUN docker-php-ext-install mbstring exif pcntl bcmath gd
+RUN docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql
+RUN docker-php-ext-install pdo pdo_pgsql pgsql zip exif pcntl
 
 # Set working directory
 COPY . /var/www/html

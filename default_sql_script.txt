@@ -1,0 +1,390 @@
+create sequence application_type_ids_seq;
+
+alter sequence application_type_ids_seq owner to root;
+
+create sequence additional_information_id_seq;
+
+alter sequence additional_information_id_seq owner to root;
+
+create sequence application_statuses_id_seq
+    start with 1
+    minvalue 0;
+
+alter sequence application_statuses_id_seq owner to root;
+
+create sequence car_id_seq;
+
+alter sequence car_id_seq owner to root;
+
+create sequence car_bill_id_seq;
+
+alter sequence car_bill_id_seq owner to root;
+
+create sequence cards_id_seq;
+
+alter sequence cards_id_seq owner to root;
+
+create sequence clients_id_seq;
+
+alter sequence clients_id_seq owner to root;
+
+create sequence documents_id_seq;
+
+alter sequence documents_id_seq owner to root;
+
+create sequence document_types_id_seq;
+
+alter sequence document_types_id_seq owner to root;
+
+create sequence education_types_id_seq;
+
+alter sequence education_types_id_seq owner to root;
+
+create sequence employment_types_id_seq;
+
+alter sequence employment_types_id_seq owner to root;
+
+create sequence familiy_statuses_id_seq;
+
+alter sequence familiy_statuses_id_seq owner to root;
+
+create sequence files_id_seq;
+
+alter sequence files_id_seq owner to root;
+
+create sequence job_informations_id_seq;
+
+alter sequence job_informations_id_seq owner to root;
+
+create sequence profession_types_id_seq;
+
+alter sequence profession_types_id_seq owner to root;
+
+create sequence applications_id_seq;
+
+alter sequence applications_id_seq owner to root;
+
+create sequence confident_id_seq
+    as integer;
+
+alter sequence confident_id_seq owner to root;
+
+create sequence seller_id_seq
+    as integer;
+
+alter sequence seller_id_seq owner to root;
+
+create sequence api_datedoc_id_seq
+    as integer;
+
+alter sequence api_datedoc_id_seq owner to root;
+
+create table document_types
+(
+    value text,
+    id    integer default nextval('"default".document_types_id_seq'::regclass) not null
+        constraint document_types_pk
+            primary key
+);
+
+alter table document_types
+    owner to root;
+
+create table documents
+(
+    name           text,
+    application_id integer,
+    type           integer
+        constraint documents_document_types_id_fk
+            references document_types,
+    files          json,
+    id             integer default nextval('"default".documents_id_seq'::regclass) not null
+        constraint documents_pk
+            primary key
+        constraint documents_pk2
+            unique,
+    seller_id      integer
+);
+
+alter table documents
+    owner to root;
+
+create table files
+(
+    name    text,
+    url     text,
+    size    double precision,
+    tooltip text,
+    type    varchar,
+    id      integer default nextval('"default".files_id_seq'::regclass) not null
+        constraint files_pk
+            primary key
+);
+
+alter table files
+    owner to root;
+
+create table employment_types
+(
+    value text,
+    id    integer default nextval('"default".employment_types_id_seq'::regclass) not null
+        constraint employment_types_pk
+            primary key
+);
+
+alter table employment_types
+    owner to root;
+
+create table profession_types
+(
+    value text,
+    id    integer default nextval('"default".profession_types_id_seq'::regclass) not null
+        constraint profession_types_pk
+            primary key
+);
+
+alter table profession_types
+    owner to root;
+
+create table job_informations
+(
+    employment     integer
+        constraint job_informations_employment_types_id_fk
+            references employment_types,
+    profession     integer
+        constraint job_informations_profession_types_id_fk
+            references profession_types,
+    application_id integer,
+    updated_at     date,
+    id             integer default nextval('"default".job_informations_id_seq'::regclass) not null
+        constraint job_informations_pk
+            primary key,
+    created_at     date
+);
+
+alter table job_informations
+    owner to root;
+
+create table application_statuses
+(
+    value text,
+    id    integer default nextval('"default".application_statuses_id_seq'::regclass) not null
+        constraint application_statuses_pk
+            primary key
+);
+
+alter table application_statuses
+    owner to root;
+
+create table clients
+(
+    name                text,
+    passport_number     varchar
+        constraint clients_pk2
+            unique,
+    birth_date          date,
+    tin                 integer,
+    pinfl               text,
+    first_name          text,
+    last_name           text,
+    middle_name         text,
+    residence_address   text,
+    passport_issued_by  text,
+    passport_issued_at  date,
+    created_at          date,
+    created_by          bigint
+        constraint clients_users_id_fk
+            references public.users,
+    updated_at          date,
+    updated_by          bigint
+        constraint clients_users_id_fk2
+            references public.users,
+    id                  integer default nextval('"default".clients_id_seq'::regclass) not null
+        constraint clients_pk
+            primary key,
+    passport_valid_date date
+);
+
+alter table clients
+    owner to root;
+
+create table family_statuses
+(
+    value text,
+    id    integer default nextval('"default".familiy_statuses_id_seq'::regclass) not null
+        constraint familiy_statuses_pk2
+            primary key
+);
+
+alter table family_statuses
+    owner to root;
+
+create table education_types
+(
+    value text,
+    id    integer default nextval('"default".education_types_id_seq'::regclass) not null
+        constraint education_types_pk
+            primary key
+);
+
+alter table education_types
+    owner to root;
+
+create table additional_information
+(
+    education      integer
+        constraint additional_information_education_types_id_fk
+            references education_types,
+    family_status  integer,
+    childs_number  integer,
+    application_id integer,
+    updated_at     date,
+    id             integer default nextval('"default".additional_information_id_seq'::regclass) not null
+        constraint additional_information_pk
+            primary key,
+    created_at     date
+);
+
+alter table additional_information
+    owner to root;
+
+create table application_types
+(
+    id    integer default nextval('"default".application_types'::regclass) not null
+        constraint application_types_pk
+            primary key,
+    value text
+);
+
+alter table application_types
+    owner to root;
+
+create table applications
+(
+    id         integer default nextval('"default".applications_id_seq'::regclass) not null
+        constraint applications_pk
+            primary key
+        constraint applications_pk2
+            unique,
+    client_id  integer,
+    phone      varchar,
+    reason     text,
+    comment    text,
+    status     integer
+        constraint applications_application_statuses_id_fk
+            references application_statuses,
+    created_at timestamp,
+    updated_at timestamp,
+    created_by bigint
+        constraint applications_users_id_fk
+            references public.users,
+    updated_by bigint
+        constraint applications_users_id_fk2
+            references public.users,
+    type       integer
+        constraint applications_application_types_id_fk
+            references application_types,
+    seller_id  integer default nextval('"default".seller_id_seq'::regclass)       not null
+);
+
+alter table applications
+    owner to root;
+
+create table car_bill
+(
+    credit_amount    double precision,
+    pre_amount       double precision,
+    monthly_amount   double precision,
+    application_id   integer
+        constraint car_bill_applications_id_fk
+            references applications,
+    id               integer default nextval('"default".car_bill_id_seq'::regclass) not null
+        constraint car_bill_pk
+            primary key,
+    month            integer,
+    insurance_amount double precision
+);
+
+alter table car_bill
+    owner to root;
+
+create table car
+(
+    tech_passport_number text,
+    id                   integer default nextval('"default".car_id_seq'::regclass) not null
+        constraint car_pk
+            primary key,
+    number               text,
+    score_file           integer
+        constraint car_files_id_fk
+            references files,
+    amount               double precision,
+    files                json,
+    application_id       integer
+        constraint car_applications_id_fk
+            references applications,
+    score_amount         double precision
+);
+
+alter table car
+    owner to root;
+
+create table cards
+(
+    number         text,
+    expire_at      text,
+    client_id      integer,
+    is_active      boolean,
+    id             integer default nextval('"default".cards_id_seq'::regclass) not null
+        constraint cards_pk
+            primary key
+        constraint cards_pk2
+            unique,
+    application_id integer
+        constraint cards_applications_id_fk
+            references applications,
+    seller_id      integer
+);
+
+alter table cards
+    owner to root;
+
+create table confidants
+(
+    name           text,
+    phone          text,
+    relation       integer,
+    id             integer default nextval('"default".confident_id_seq'::regclass) not null
+        constraint confidants_pk
+            primary key,
+    application_id integer
+);
+
+alter table confidants
+    owner to root;
+
+create table api_datedoc
+(
+    document   text                                                              not null,
+    birth_date date,
+    body       json,
+    id         integer default nextval('"default".api_datedoc_id_seq'::regclass) not null
+        constraint api_datedoc_pk
+            primary key
+);
+
+alter table api_datedoc
+    owner to root;
+
+create table api_address
+(
+    id    integer default nextval('"default".api_datedoc_id_seq'::regclass) not null
+        constraint api_address_pk
+            primary key,
+    pinpp text,
+    body  json
+);
+
+alter table api_address
+    owner to root;
+

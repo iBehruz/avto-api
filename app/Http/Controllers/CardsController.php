@@ -13,9 +13,6 @@ class CardsController extends Controller
     public function index(Request $request)
     {
         $data = Cards::where("application_id", $request["application_id"])->get();
-        if(sizeof($data) == 0){
-            return $this->sendResponse([["number"=>""], ["number"=>""]], "Not Exits .");
-        }
         return $this->sendResponse($data, "Success .");
     }
 

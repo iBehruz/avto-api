@@ -5,24 +5,22 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class JobInforamtions extends Model
+class ApiAddress extends Model
 {
     use HasFactory;
 
-
-    protected $table = 'default.job_informations';
+    protected $table = 'default.api_address';
     protected $primaryKey = 'id';
     public $incrementing = true;
-    public $timestamps = true;
+    public $timestamps = false;
     /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
      */
     protected $fillable = [
-        'employment',
-        'profession',
-        'application_id'
+        'pinpp',
+        'body'
     ];
 
     /**
@@ -31,10 +29,8 @@ class JobInforamtions extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'employment' => 'integer',
-        'profession' => 'integer',
-        'application_id' => 'integer'
+        'pinpp' => 'string',
+        'body' => 'json'
     ];
-
 
 }

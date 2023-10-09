@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdditionalInformationsController;
 use App\Http\Controllers\API\ApplicationsController;
 use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\ApiDatedocController;
 use App\Http\Controllers\ApplicationStatusesController;
 use App\Http\Controllers\ApplicationTypesController;
 use App\Http\Controllers\CarBillController;
@@ -70,6 +71,9 @@ Route::middleware(['auth:api'])->group(function () {
 
     Route::resource('application_types', ApplicationTypesController::class);
     Route::resource('application_statuses', ApplicationStatusesController::class);
+
+    Route::resource('doc', ApiDatedocController::class);
+
 });
 
 

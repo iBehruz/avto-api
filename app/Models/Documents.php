@@ -22,7 +22,8 @@ class Documents extends Model
         'name',
         'application_id',
         'type',
-        'files'
+        'files',
+        'seller_id'
     ];
 
     /**
@@ -34,6 +35,7 @@ class Documents extends Model
         'name' => 'string',
         'application_id' => 'integer',
         'type' => 'integer',
-        'files' => 'json'
+        'files' => 'json',
+        'seller_id' => 'integer'
     ];
 }

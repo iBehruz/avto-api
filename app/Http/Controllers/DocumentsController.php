@@ -15,7 +15,7 @@ class DocumentsController extends Controller
     public function index(Request $request)
     {
         if($request["application_id"]){
-            $documents = Documents::where("application_id", $request["application_id"])->first();
+            $documents = Documents::where("application_id", $request["application_id"])->get();
             if($documents == null){
                 return $this->sendResponse(["type" => 1, "files" => []], "Not exists .", 422);
             }

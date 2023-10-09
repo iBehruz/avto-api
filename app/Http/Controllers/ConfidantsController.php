@@ -15,9 +15,6 @@ class ConfidantsController extends Controller
     {
         $data = Confidants::where("application_id", $request["application_id"])->get();
 
-        if(sizeof($data) == 0){
-            return $this->sendResponse([["relation"=>1], ["relation"=>1]], "Not Exits .");
-        }
         return $this->sendResponse($data, "Success .");
     }
 

@@ -24,7 +24,8 @@ class Cards extends Model
         'client_id',
         'id',
         'is_active',
-        'application_id'
+        'application_id',
+        'seller_id'
     ];
 
     /**
@@ -38,7 +39,8 @@ class Cards extends Model
         'client_id' => 'integer',
         'id' => 'integer',
         'is_active' => 'boolean',
-        'application_id' => 'string'
+        'application_id' => 'string',
+        'seller_id' => 'integer'
     ];
 
 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Clients;
+use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 
 class ClientsController extends Controller
@@ -62,4 +63,6 @@ class ClientsController extends Controller
     {
         //
     }
+
+
 }

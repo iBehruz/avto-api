@@ -11,7 +11,7 @@ class AdditionalInformations extends Model
 
     protected $table = 'default.additional_information';
     protected $primaryKey = 'id';
-    public $incrementing = false;
+    public $incrementing = true;
     public $timestamps = true;
     /**
      * The attributes that are mass assignable.

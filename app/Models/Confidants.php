@@ -11,7 +11,7 @@ class Confidants extends Model
 
     protected $table = 'default.confidants';
     protected $primaryKey = 'id';
-    public $incrementing = false;
+    public $incrementing = true;
     public $timestamps = false;
     /**
      * The attributes that are mass assignable.

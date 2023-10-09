@@ -4,9 +4,12 @@ namespace App\Http\Controllers\API;
 
 
 use App\Http\Controllers\Controller as Controller;
+use App\Models\ApiAddress;
+use App\Models\ApiDatedoc;
 use App\Models\Applications;
 use App\Models\carBill;
 use App\Models\Clients;
+use http\Client;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -21,7 +24,6 @@ class ApplicationsController extends Controller
      */
     public function index(Request $request)
     {
-
         if( $request["id"] != null){
             $data = Applications::select(["default.clients.*", "default.applications.*"])
                 ->leftJoin('default.clients', 'default.clients.id', '=', 'default.applications.client_id')
@@ -58,66 +60,21 @@ class ApplicationsController extends Controller
             "passport_number" => 'required|string',
             "birth_date" => 'required|string',
         ]);
-
-        if(Clients::where("passport_number", $request["passport_number"])->first() != null){
-            return $this->sendError("Client exists", [], 403);
+        $client = Applications::select(["default.clients.*", "default.applications.*"])
+            ->leftJoin('default.clients', 'default.clients.id', '=', 'default.applications.client_id')
+            ->where("passport_number", $request["passport_number"])
+            ->first();
+        if($client != null){
+            return $this->sendError("Client exists", $client, 403);
         }
 
         DB::transaction(function() use ($carBill, $applications, $clients, $request) {
 
-
             $clients->fill($request->only($clients->getFillable()));
 
-            $apiData = [
-                "status" => true,
-                "queryld" => "1001",
-                "pinpp" => "51011026610034",
-                "document" => "AC0233312",
-                "surnamelatin" => "ILHOMOV",
-                "namelatin" => "BEHRO‘Z",
-                "patronymlatin" => "BAHODIR O‘G‘LI",
-                "engsurname" => "ILKHOMOV",
-                "engname" => "BEKHRUZ",
-                "birthDate" => "2002-11-10",
-                "birthplace" => "PISKENT TUMANI",
-                "birthplaceid" => "",
-                "birthcountry" => "УЗБЕКИСТАН",
-                "birthcountryid" => "182",
-                "livestatus" => "1",
-                "nationality" => "УЗБЕК/УЗБЕЧКА",
-                "nationalityid" => "44",
-                "citizenship" => "УЗБЕКИСТАН",
-                "citizenshipid" => "182",
-                "sex" => "1",
-                "docgiveplace" => "АЛМАЗАРСКИЙ РУВД ГОРОДА ТАШКЕНТА",
-                "docgiveplaceid" => "26401",
-                "docdatebegin" => "2018-11-30",
-                "docdateend" => "2028-11-29"
-            ];
+            $apiData = ApiDatedoc::where("document", $request["passport_number"])->first()["body"];
 
-            $apiData2 = [
-                "permanentRegistration" => [
-                "registrationDate" => "2018-07-02T00:00:00",
-                  "cadastre" => "10:08:04:03:02:5017:0001:032",
-                  "country" => [
-                    "id" => 182,
-                    "value" => "ЎЗБЕКИСТОН",
-                    "idValue" => "(182) ЎЗБЕКИСТОН"
-                  ],
-                  "region" => [
-                    "id" => 10,
-                    "value" => "ТОШКЕНТ ШАҲРИ",
-                    "idValue" => "(10) ТОШКЕНТ ШАҲРИ"
-                  ],
-                  "district" => [
-                    "id" => 1012,
-                    "value" => "ОЛМАЗОР ТУМАНИ",
-                    "idValue" => "(1012) ОЛМАЗОР ТУМАНИ"
-                  ],
-                  "address" => "ИСТИКБОЛ МФЙ, ҚОРА-ҚАМИШ 2/1 ДАХАСИ,  uy:18 xonadon:32"
-                ],
-                "temproaryRegistrations" => null
-            ];
+            $apiData2 = ApiAddress::where("pinpp", $apiData["pinpp"])->first()["body"];
 
             $clients->setAttribute("name", $apiData["surnamelatin"] . " " . $apiData["namelatin"] . " ". $apiData["patronymlatin"]);
             $clients->setAttribute("birth_date", $apiData["birthDate"]);
@@ -138,7 +95,7 @@ class ApplicationsController extends Controller
 
             $applications->fill($request->only($applications->getFillable()));
             $applications->setAttribute("client_id", $clients["id"]);
-            $applications->setAttribute("status", 1);
+            $applications->setAttribute("status", 0);
 
             $applications->save();
 
@@ -176,9 +133,10 @@ class ApplicationsController extends Controller
     public function update(Request $request, string $id)
     {
         $applications =  Applications::where("id", $id)->first();
+        $client = Clients::where("id", $applications["client_id"])->first();
         $applications->fill($request->only($applications->getFillable()));
         $applications->save();
-        return $this->sendResponse($applications, "Success .");
+        return $this->sendResponse(array_merge($applications->toArray(), $client->toArray()), "Success .");
     }
 
     /**

@@ -14,6 +14,9 @@ class CarBillController extends Controller
     public function index(Request $request)
     {
         $data = CarBill::where("application_id", $request["application_id"])->first();
+        if($data == null){
+            return $this->sendResponse(["month"=>6], "Not Exists .");
+        }
         return $this->sendResponse($data, "Success .");
     }
 
@@ -54,7 +57,10 @@ class CarBillController extends Controller
      */
     public function update(Request $request, carBill $car_bill)
     {
-        //
+        $carBill = $car_bill;
+        $carBill->fill($request->only($carBill->getFillable()));
+        $carBill->save();
+        return $this->sendResponse($carBill, "Success .");
     }
 
     /**
